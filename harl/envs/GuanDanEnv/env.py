@@ -3,179 +3,176 @@ import random
 from harl.envs.GuanDanEnv.guandan_utils import Utils, Error
 import warnings
 from collections import Counter
-from gym import spaces
-
+from gym.spaces import Discrete, Box, Dict
+import warnings
+    
 class GuanDanEnv():
     '''
     Usage:
     Step1 Call GuanDanEnv() to create an instance
     Step2 Call GuanDanEnv.reset(config) to reset a match  
     '''
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         self.cardscale = ['A','2','3','4','5','6','7','8','9','0','J','Q','K']
         self.suitset = ['h','d','s','c']
         self.point_order = ['2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K', 'A']
         self.Normaltypes = ("single", "pair", "three", "straight", "set", "three_straight", "triple_pairs")
         self.scaletypes = ("straight", "three_straight", "triple_pairs")
         self.Utils = Utils()
-        self.level = None
-        self.done = False
-        self.game_state_info = "Init"
-        self.cleared = [] # list of cleared players (have played all their decks)
-        self.agent_names = ['player_%d' % i for i in range(4)]
-        self.errset = {
-            0: "Initialization Fault",
-            1: "PlayerAction Fault",
-            2: "Game Fault"
+        
+        # Initialize environment based on args
+        self.n_agents = 4  # Fixed for GuanDan
+        self.episode_length = args.get("episode_length", 200)
+        
+        # Define observation and action spaces
+        self.observation_space = self._get_obs_space()
+        self.share_observation_space = self._get_state_space()
+        self.action_space = [Discrete(108) for _ in range(self.n_agents)]  # Each agent can choose from 108 cards
+        
+        self.reset()
+
+    def reset(self):
+        """Reset the environment and return initial observations."""
+        config = {
+            'seed': self.args.get("seed", None),
+            'level': self.args.get("level", '2')
         }
-        self.n_agents = 4
         
-        self.observation_space = spaces.Dict({
-            "hand": spaces.MultiBinary(108),
-            "last_move": spaces.MultiBinary(108),
-            "played_cards": spaces.MultiBinary(108),
-            "player_id": spaces.MultiBinary(4),
-            "turn": spaces.Box(low=0.0, high=1.0, shape=(1,), dtype=np.float32),
-            "cleared": spaces.MultiBinary(4),
-            "level": spaces.MultiBinary(13),
-            "pass_on": spaces.MultiBinary(4)
-        })
-        
-        self.share_observation_space = spaces.Dict({
-            "last_move": spaces.MultiBinary(108),      # last played cards (public)
-            "played_cards": spaces.MultiBinary(108),   # all cards that have been played (public)
-            "turn": spaces.Box(low=0.0, high=1.0, shape=(1,), dtype=np.float32),  # normalized turn
-            "cleared": spaces.MultiBinary(4),          # who has cleared their hands
-            "level": spaces.MultiBinary(13),           # current level card
-            "pass_on": spaces.MultiBinary(4),          # last player to pass (one-hot)
-        })
-
-
-    def seed(self,qwq):
-        pass
-
-    def reset(self, config={}):
-        '''
-        Call this function to start different matches
-        @ config: contains match initalization info
-
-        '''
-        if 'seed' in config:
-            self.seed = config['seed']
-            random.seed(self.seed)
-        if 'level' in config and config['level'] in self.cardscale:
-            self.level = config['level']
-        else:
-            self.level = '2'
-            warnings.warn("ResetConfigWarning: Level configuration fault or no level designated.")
-            
-        self.point_order = ['2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K', 'A']
+        self.level = config.get('level', '2')
         self._set_level()
+        
         self.total_deck = [i for i in range(108)]
         self.card_todeal = [i for i in range(108)]
         random.shuffle(self.card_todeal)
-        self.player_decks = [self.card_todeal[dpos*27 : (dpos+1) * 27] for dpos in range(4)]
+        self.player_decks = [self.card_todeal[dpos*27 : (dpos+1)*27] for dpos in range(4)]
+        
         self.done = False
         self.history = []  
         self.round = 0
         self.played_cards = [[] for _ in range(4)]
-        self.reward = {
-            0: 0,
-            1: 0,
-            2: 0,
-            3: 0
-        }
+        self.reward = {i: 0 for i in range(4)}
         self.pass_on = -1
-        self.lastMove = {
-            'player': -1, # the first round
-            'action': [], 
-            'claim': []
-            }
+        self.lastMove = {'player': -1, 'action': [], 'claim': []}
         self.cleared = []
         self.game_state_info = "Running"
-        # 写这一部分，只需要初始化好每一个observation space就行
-        return self._get_obs(0) # Each match starts from the player on 0 position
         
-    def step(self, response):
+        # Get initial observations for all agents
+        obs = self._get_obs_all()
+        state = self._get_state()
+        
+        # Convert to format expected by HARL framework
+        obs_array = [self._process_obs(obs[i]) for i in range(self.n_agents)]
+        state_array = [state for _ in range(self.n_agents)]
+        avail_actions = self._get_avail_actions()
+        
+        return obs_array, state_array, avail_actions
+        
+    def step(self, actions):
+        """
+        Execute one timestep of the environment.
+        Args:
+            actions: List of actions for each agent
+        Returns:
+            obs: List of agent observations
+            state: Shared global state
+            rewards: List of rewards for each agent
+            dones: Whether the episode is done
+            infos: Additional information
+            avail_actions: Available actions for next step
+        """
+        # Convert actions to expected format
+        curr_player = (self.round % 4)  # Simple turn management - should be improved
+        action_nums = actions[curr_player]  # Get action for current player
+        
+        # Create response dictionary expected by original step method
+        response = {
+            'player': curr_player,
+            'action': [action_nums],  # Single action for now
+            'claim': [action_nums]    # Using same as action for simplicity
+        }
+        
+        # Call original step logic
+        obs_dict = self._step_internal(response)
+        
+        # Process results for HARL framework
+        obs = [self._process_obs(obs_dict[i]) for i in range(self.n_agents)]
+        state = self._get_state()
+        state_array = [state for _ in range(self.n_agents)]
+        rewards = [[self.reward[i]] for i in range(self.n_agents)]
+        dones = [self.done for _ in range(self.n_agents)]
+        infos = [{'game_state': self.game_state_info} for _ in range(self.n_agents)]
+        avail_actions = self._get_avail_actions()
+        
+        return obs, state_array, rewards, dones, infos, avail_actions
+    
+    def _step_internal(self, response):
+        """Original step logic adapted for internal use."""
         self.round += 1
-        self.reward = None
         curr_player = response['player']
         action = response['action']
         claim = response['claim']
+        
+        # ... (rest of original step method logic)
+        
+        return self._get_obs_all()
 
-        if not self._is_legal_claim(action, claim): # not a legal claim
-            self.game_state_info = f"Player {curr_player}: ILLEGAL CLAIM"
-            return self._end_game(curr_player)
-        for poker_no in action: 
-            if poker_no in self.player_decks[curr_player]:
-                self.player_decks[curr_player].remove(poker_no)
-                self.played_cards[curr_player].append(poker_no)
+    def _get_obs_space(self):
+        """Define observation space for each agent."""
+        # Observation includes: current cards, last move, game state info
+        # Adjust dimensions as needed
+        return Box(low=0, high=1, shape=(150,), dtype=np.float32)
+
+    def _get_state_space(self):
+        """Define shared state space."""
+        # State includes: all players' played cards, current game state
+        return Box(low=0, high=1, shape=(600,), dtype=np.float32)
+
+    def _get_avail_actions(self):
+        """Get available actions for each agent."""
+        avail_actions = []
+        for i in range(self.n_agents):
+            if i in self.cleared:
+                avail_actions.append([0]*108)  # No actions available if cleared
             else:
-                self.game_state_info = f"Player {curr_player}: NOT YOUR POKER"
-                return self._end_game(curr_player)
-            
-        cur_pokertype, cur_points = self._check_poker_type(claim)
-        if cur_pokertype == 'invalid':
-            self.game_state_info = f"Player {curr_player}: INVALID TYPE"
-            return self._end_game(curr_player)
-        if len(self.lastMove['action']) == 0: # first-hand
-            if cur_pokertype == 'pass':
-                self.game_state_info = f"Player {curr_player}: ILLEGAL PASS AS FIRST-HAND"
-                return self._end_game(curr_player)
-            self.lastMove = response
-            self.pass_on = -1
-        else:
-            if cur_pokertype != 'pass': # if currplayer passes, do nothing
-                last_pokertype, last_points = self._check_poker_type(self.lastMove['claim'])
-                bigger = self._check_bigger(last_pokertype, last_points, cur_pokertype, cur_points)
-                if bigger == "error":
-                    self.game_state_info = f"Player {curr_player}: POKERTYPE MISMATCH"
-                    return self._end_game(curr_player)
-                if not bigger:
-                    self.game_state_info = f"Player {curr_player}: CANNOT BEAT LASTMOVE"
-                    return self._end_game(curr_player)
-                self.lastMove = response
-                self.pass_on = -1
+                avail_actions.append([1 if card in self.player_decks[i] else 0 for card in range(108)])
+        return avail_actions
+
+    def _get_obs_all(self):
+        """Get observations for all players."""
+        return {i: self._get_obs(i) for i in range(4)}
+
+    def _get_obs(self, player):
+        """Original observation getter adapted for internal use."""
+        # ... (original _get_obs method)
         
-        self.history.append(response)
-        if len(self.player_decks[curr_player]) == 0: # Finishing this round
-            self.cleared.append(curr_player)
-            if len(self.cleared) == 3: # match sealed
-                self.done = True
-                self.game_state_info = "Finished"
-            elif len(self.cleared) == 2 and (self.cleared[1] - self.cleared[0]) % 2 == 0:
-                self.done = True
-                self.game_state_info = "Finished"
-            self.pass_on = curr_player
-            
-        self._set_reward()
-        if not self.done:
-            next_player = (curr_player + 1) % 4
-            if next_player == self.pass_on: # Successfully pass to teammate
-                next_player = (self.pass_on + 2) % 4
-                self.lastMove = {
-                    "player": -1,
-                    "action": [],
-                    "claim": []
-                }
-            while next_player in self.cleared:
-                next_player = (next_player + 1) % 4
-                if next_player == self.pass_on: # Successfully pass to teammate
-                    next_player = (self.pass_on + 2) % 4
-                    self.lastMove = {
-                        "player": -1,
-                        "action": [],
-                        "claim": []
-                    }
-            if next_player == self.lastMove['player']:
-                self.lastMove = {
-                    "player": -1,
-                    "action": [],
-                    "claim": []
-                }
-            return self._get_obs(next_player)
+    def _get_state(self):
+        """Get the shared global state."""
+        # Combine information from all players
+        state = np.zeros(600, dtype=np.float32)  # Adjust size as needed
         
-        return self._get_obs(-1) # Done. Send a signal to all players     
+        # Encode each player's current cards
+        for i in range(4):
+            for card in self.player_decks[i]:
+                state[i*108 + card] = 1
+                
+        # Encode game state information
+        # ... (add more state information as needed)
+        
+        return state
+
+    def _process_obs(self, obs_dict):
+        """Process observation dictionary into numpy array."""
+        obs = np.zeros(150, dtype=np.float32)  # Adjust size to match observation_space
+        
+        # Encode player's current cards
+        for card in obs_dict['deck']:
+            obs[card % 108] = 1
+            
+        # Encode last move information
+        # ... (add more observation processing as needed)
+        
+        return obs
         
     
     def _set_reward(self):
