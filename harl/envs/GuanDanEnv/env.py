@@ -26,10 +26,16 @@ class GuanDanEnv():
         self.episode_length = args.get("episode_length", 200)
         
         # Define observation and action spaces
-        self.observation_space = self._get_obs_space()
-        self.share_observation_space = self._get_state_space()
-        self.action_space = [Discrete(108) for _ in range(self.n_agents)]  # Each agent can choose from 108 cards
-        
+        self.action_space = [Discrete(108) for _ in range(self.n_agents)]
+        self.observation_space = [Box(low=0, high=1, shape=(150,), dtype=np.float32) 
+                                for _ in range(self.n_agents)]
+        self.share_observation_space = [Box(low=0, high=1, shape=(600,), dtype=np.float32)
+                                    for _ in range(self.n_agents)]
+    
+        # 初始化游戏状态变量
+        self.player_decks = [[] for _ in range(4)]
+        self.lastMove = {'player': -1, 'action': [], 'claim': []}
+        self.history = []    
         self.reset()
 
     def reset(self):
@@ -60,12 +66,12 @@ class GuanDanEnv():
         # Get initial observations for all agents
         obs = self._get_obs_all()
         state = self._get_state()
-        
-        # Convert to format expected by HARL framework
+        avail_actions = self._get_avail_actions()
+    
+        # 确保返回格式正确
         obs_array = [self._process_obs(obs[i]) for i in range(self.n_agents)]
         state_array = [state for _ in range(self.n_agents)]
-        avail_actions = self._get_avail_actions()
-        
+    
         return obs_array, state_array, avail_actions
         
     def step(self, actions):
@@ -143,8 +149,20 @@ class GuanDanEnv():
         return {i: self._get_obs(i) for i in range(4)}
 
     def _get_obs(self, player):
-        """Original observation getter adapted for internal use."""
-        # ... (original _get_obs method)
+        '''
+        getting observation for player
+        player: player_id (-1: all players)
+        '''
+        # 修改返回值结构，确保包含所有必要字段
+        return {
+            "deck": self.player_decks[player],  # 玩家当前手牌
+            "last_move": self.lastMove,         # 最后出的牌
+            "history": self.history,            # 历史记录
+            "status": self.game_state_info,     # 游戏状态
+            "player_id": player,                # 玩家ID
+            "level": self.level,                # 当前级别
+            "reward": self.reward[player]       # 当前奖励
+        }
         
     def _get_state(self):
         """Get the shared global state."""
@@ -163,15 +181,20 @@ class GuanDanEnv():
 
     def _process_obs(self, obs_dict):
         """Process observation dictionary into numpy array."""
-        obs = np.zeros(150, dtype=np.float32)  # Adjust size to match observation_space
-        
-        # Encode player's current cards
-        for card in obs_dict['deck']:
-            obs[card % 108] = 1
-            
-        # Encode last move information
-        # ... (add more observation processing as needed)
-        
+        obs = np.zeros(150, dtype=np.float32)  # 确保与observation_space形状一致
+    
+        # 安全访问字典字段
+        if 'deck' in obs_dict:
+            for card in obs_dict['deck']:
+                obs[card % 108] = 1  # 标记拥有的牌
+    
+        # 编码最后出的牌信息（示例）
+        if 'last_move' in obs_dict and obs_dict['last_move']['action']:
+            last_card = obs_dict['last_move']['action'][0]
+            obs[108 + last_card % 108] = 1
+    
+        # 可以添加更多特征的编码...
+    
         return obs
         
     

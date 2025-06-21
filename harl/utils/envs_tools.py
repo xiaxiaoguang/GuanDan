@@ -100,7 +100,7 @@ def make_train_env(env_name, seed, n_threads, env_args):
             else:
                 print("Can not support the " + env_name + "environment.")
                 raise NotImplementedError
-            env.seed(seed + rank * 1000)
+            #env.seed(seed + rank * 1000)
             return env
 
         return init_env
@@ -157,7 +157,7 @@ def make_eval_env(env_name, seed, n_threads, env_args):
             else:
                 print("Can not support the " + env_name + "environment.")
                 raise NotImplementedError
-            env.seed(seed * 50000 + rank * 10000)
+            #env.seed(seed * 50000 + rank * 10000)
             return env
 
         return init_env
@@ -230,8 +230,7 @@ def make_render_env(env_name, seed, env_args):
     elif env_name == 'GuanDan':
         from harl.envs.GuanDanEnv.env import GuanDanEnv
                 
-        env = GuanDanEnv(env_args)    
-        env.seed(seed * 60000)    
+        env = GuanDanEnv(env_args)
     else:
         print("Can not support the " + env_name + "environment.")
         raise NotImplementedError
