@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from harl.envs.GuanDanEnv.utils import Utils, Error
+from harl.envs.GuanDanEnv.guandan_utils import Utils, Error
 import warnings
 from collections import Counter
 from gym import spaces
