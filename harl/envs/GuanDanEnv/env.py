@@ -12,67 +12,65 @@ class GuanDanEnv():
     Step1 Call GuanDanEnv() to create an instance
     Step2 Call GuanDanEnv.reset(config) to reset a match  
     '''
-    def __init__(self, args):
-        self.args = args
+    def __init__(self):
         self.cardscale = ['A','2','3','4','5','6','7','8','9','0','J','Q','K']
         self.suitset = ['h','d','s','c']
         self.point_order = ['2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K', 'A']
         self.Normaltypes = ("single", "pair", "three", "straight", "set", "three_straight", "triple_pairs")
         self.scaletypes = ("straight", "three_straight", "triple_pairs")
         self.Utils = Utils()
-        
-        # Initialize environment based on args
-        self.n_agents = 4  # Fixed for GuanDan
-        self.episode_length = args.get("episode_length", 200)
-        
-        # Define observation and action spaces
-        self.action_space = [Discrete(108) for _ in range(self.n_agents)]
-        self.observation_space = [Box(low=0, high=1, shape=(150,), dtype=np.float32) 
-                                for _ in range(self.n_agents)]
-        self.share_observation_space = [Box(low=0, high=1, shape=(600,), dtype=np.float32)
-                                    for _ in range(self.n_agents)]
-    
-        # 初始化游戏状态变量
-        self.player_decks = [[] for _ in range(4)]
-        self.lastMove = {'player': -1, 'action': [], 'claim': []}
-        self.history = []    
-        self.reset()
-
-    def reset(self):
-        """Reset the environment and return initial observations."""
-        config = {
-            'seed': self.args.get("seed", None),
-            'level': self.args.get("level", '2')
+        self.level = None
+        self.seed = None
+        self.done = False
+        self.game_state_info = "Init"
+        self.cleared = [] # list of cleared players (have played all their decks)
+        self.agent_names = ['player_%d' % i for i in range(4)]
+        self.errset = {
+            0: "Initialization Fault",
+            1: "PlayerAction Fault",
+            2: "Game Fault"
         }
-        
-        self.level = config.get('level', '2')
+
+    def reset(self, config={}):
+        '''
+        Call this function to start different matches
+        @ config: contains match initalization info
+
+        '''
+        if 'seed' in config:
+            self.seed = config['seed']
+            random.seed(self.seed)
+        if 'level' in config and config['level'] in self.cardscale:
+            self.level = config['level']
+        else:
+            self.level = '2'
+            warnings.warn("ResetConfigWarning: Level configuration fault or no level designated.")
+            
+        self.point_order = ['2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K', 'A']
         self._set_level()
-        
         self.total_deck = [i for i in range(108)]
         self.card_todeal = [i for i in range(108)]
         random.shuffle(self.card_todeal)
-        self.player_decks = [self.card_todeal[dpos*27 : (dpos+1)*27] for dpos in range(4)]
-        
+        self.player_decks = [self.card_todeal[dpos*27 : (dpos+1) * 27] for dpos in range(4)]
         self.done = False
         self.history = []  
         self.round = 0
         self.played_cards = [[] for _ in range(4)]
-        self.reward = {i: 0 for i in range(4)}
+        self.reward = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0
+        }
         self.pass_on = -1
-        self.lastMove = {'player': -1, 'action': [], 'claim': []}
+        self.lastMove = {
+            'player': -1, # the first round
+            'action': [], 
+            'claim': []
+            }
         self.cleared = []
         self.game_state_info = "Running"
-        
-        # Get initial observations for all agents
-        obs = self._get_obs_all()
-        state = self._get_state()
-        avail_actions = self._get_avail_actions()
-    
-        # 确保返回格式正确
-        obs_array = [self._process_obs(obs[i]) for i in range(self.n_agents)]
-        state_array = [state for _ in range(self.n_agents)]
-    
-        return obs_array, state_array, avail_actions
+        return self._get_obs(0) # Each match starts from the player on 0 position
         
     def step(self, actions):
         """
@@ -99,105 +97,140 @@ class GuanDanEnv():
         }
         
         # Call original step logic
-        obs_dict = self._step_internal(response)
+        self._step_internal(response)
         
-        # Process results for HARL framework
-        obs = [self._process_obs(obs_dict[i]) for i in range(self.n_agents)]
+        obs = [self._process_obs(self._get_obs(i)) for i in range(self.n_agents)]
         state = self._get_state()
-        state_array = [state for _ in range(self.n_agents)]
-        rewards = [[self.reward[i]] for i in range(self.n_agents)]
+        rewards = [[float(self.reward[i])] for i in range(self.n_agents)]  # 转换为float
         dones = [self.done for _ in range(self.n_agents)]
         infos = [{'game_state': self.game_state_info} for _ in range(self.n_agents)]
         avail_actions = self._get_avail_actions()
         
-        return obs, state_array, rewards, dones, infos, avail_actions
-    
+        return obs, state, rewards, dones, infos, avail_actions
+
     def _step_internal(self, response):
-        """Original step logic adapted for internal use."""
         self.round += 1
+        self.reward = None
         curr_player = response['player']
         action = response['action']
         claim = response['claim']
-        
-        # ... (rest of original step method logic)
-        
-        return self._get_obs_all()
-
-    def _get_obs_space(self):
-        """Define observation space for each agent."""
-        # Observation includes: current cards, last move, game state info
-        # Adjust dimensions as needed
-        return Box(low=0, high=1, shape=(150,), dtype=np.float32)
-
-    def _get_state_space(self):
-        """Define shared state space."""
-        # State includes: all players' played cards, current game state
-        return Box(low=0, high=1, shape=(600,), dtype=np.float32)
-
-    def _get_avail_actions(self):
-        """Get available actions for each agent."""
-        avail_actions = []
-        for i in range(self.n_agents):
-            if i in self.cleared:
-                avail_actions.append([0]*108)  # No actions available if cleared
+        if not self._is_legal_claim(action, claim): # not a legal claim
+            self.game_state_info = f"Player {curr_player}: ILLEGAL CLAIM"
+            return self._end_game(curr_player)
+        for poker_no in action: 
+            if poker_no in self.player_decks[curr_player]:
+                self.player_decks[curr_player].remove(poker_no)
+                self.played_cards[curr_player].append(poker_no)
             else:
-                avail_actions.append([1 if card in self.player_decks[i] else 0 for card in range(108)])
-        return avail_actions
-
-    def _get_obs_all(self):
-        """Get observations for all players."""
-        return {i: self._get_obs(i) for i in range(4)}
-
-    def _get_obs(self, player):
-        '''
-        getting observation for player
-        player: player_id (-1: all players)
-        '''
-        # 修改返回值结构，确保包含所有必要字段
-        return {
-            "deck": self.player_decks[player],  # 玩家当前手牌
-            "last_move": self.lastMove,         # 最后出的牌
-            "history": self.history,            # 历史记录
-            "status": self.game_state_info,     # 游戏状态
-            "player_id": player,                # 玩家ID
-            "level": self.level,                # 当前级别
-            "reward": self.reward[player]       # 当前奖励
-        }
+                self.game_state_info = f"Player {curr_player}: NOT YOUR POKER"
+                return self._end_game(curr_player)
+        cur_pokertype, cur_points = self._check_poker_type(claim)
+        if cur_pokertype == 'invalid':
+            self.game_state_info = f"Player {curr_player}: INVALID TYPE"
+            return self._end_game(curr_player)
+        if len(self.lastMove['action']) == 0: # first-hand
+            if cur_pokertype == 'pass':
+                self.game_state_info = f"Player {curr_player}: ILLEGAL PASS AS FIRST-HAND"
+                return self._end_game(curr_player)
+            self.lastMove = response
+            self.pass_on = -1
+        else:
+            if cur_pokertype != 'pass': # if currplayer passes, do nothing
+                last_pokertype, last_points = self._check_poker_type(self.lastMove['claim'])
+                bigger = self._check_bigger(last_pokertype, last_points, cur_pokertype, cur_points)
+                if bigger == "error":
+                    self.game_state_info = f"Player {curr_player}: POKERTYPE MISMATCH"
+                    return self._end_game(curr_player)
+                if not bigger:
+                    self.game_state_info = f"Player {curr_player}: CANNOT BEAT LASTMOVE"
+                    return self._end_game(curr_player)
+                self.lastMove = response
+                self.pass_on = -1
         
+        self.history.append(response)
+        if len(self.player_decks[curr_player]) == 0: # Finishing this round
+            self.cleared.append(curr_player)
+            if len(self.cleared) == 3: # match sealed
+                self.done = True
+                self.game_state_info = "Finished"
+            elif len(self.cleared) == 2 and (self.cleared[1] - self.cleared[0]) % 2 == 0:
+                self.done = True
+                self.game_state_info = "Finished"
+            self.pass_on = curr_player
+            
+        self._set_reward()
+        
+        if not self.done:
+            next_player = (curr_player + 1) % 4
+            if next_player == self.pass_on: # Successfully pass to teammate
+                next_player = (self.pass_on + 2) % 4
+                self.lastMove = {
+                    "player": -1,
+                    "action": [],
+                    "claim": []
+                }
+            while next_player in self.cleared:
+                next_player = (next_player + 1) % 4
+                if next_player == self.pass_on: # Successfully pass to teammate
+                    next_player = (self.pass_on + 2) % 4
+                    self.lastMove = {
+                        "player": -1,
+                        "action": [],
+                        "claim": []
+                    }
+            if next_player == self.lastMove['player']:
+                self.lastMove = {
+                    "player": -1,
+                    "action": [],
+                    "claim": []
+                }
+            return self._get_obs(next_player)
+        return self._get_obs(-1) # Done. Send a signal to all players
+
+
+    def _process_obs(self, obs_dict):
+        """将观察字典转换为numpy数组"""
+        obs = np.zeros(150, dtype=np.float32)
+        
+        # 编码手牌（0-107位）
+        for card in obs_dict.get('deck', []):
+            obs[card % 108] = 1
+            
+        # 编码最后出的牌（108-215位）
+        if obs_dict.get('last_move', {}).get('action'):
+            last_card = obs_dict['last_move']['action'][0]
+            obs[108 + last_card % 108] = 1
+            
+        # 预留其他特征（如历史动作、玩家ID等）
+        obs[216] = obs_dict.get('player_id', 0) / 3  # 归一化玩家ID
+        obs[217] = float(self.level in ['2', 'A'])  # 是否为主牌等级
+        
+        return obs
+
     def _get_state(self):
-        """Get the shared global state."""
-        # Combine information from all players
-        state = np.zeros(600, dtype=np.float32)  # Adjust size as needed
+        """生成全局状态"""
+        state = np.zeros(600, dtype=np.float32)
         
-        # Encode each player's current cards
+        # 编码所有玩家的手牌（每玩家占用108位）
         for i in range(4):
             for card in self.player_decks[i]:
                 state[i*108 + card] = 1
                 
-        # Encode game state information
-        # ... (add more state information as needed)
-        
+        # 编码游戏状态（432-599位）
+        state[432] = len(self.cleared) / 4  # 已出完牌玩家比例
+        state[433] = self.round / self.episode_length  # 回合进度
         return state
 
-    def _process_obs(self, obs_dict):
-        """Process observation dictionary into numpy array."""
-        obs = np.zeros(150, dtype=np.float32)  # 确保与observation_space形状一致
-    
-        # 安全访问字典字段
-        if 'deck' in obs_dict:
-            for card in obs_dict['deck']:
-                obs[card % 108] = 1  # 标记拥有的牌
-    
-        # 编码最后出的牌信息（示例）
-        if 'last_move' in obs_dict and obs_dict['last_move']['action']:
-            last_card = obs_dict['last_move']['action'][0]
-            obs[108 + last_card % 108] = 1
-    
-        # 可以添加更多特征的编码...
-    
-        return obs
+    def _get_avail_actions(self):
+        """生成可用动作掩码）"""
+        avail_actions = []
+        for i in range(self.n_agents):
+            if i in self.cleared:
+                avail_actions.append([0]*108)  # 已出完牌的玩家无可用动作
+            else:
+                avail_actions.append([1 if card in self.player_decks[i] else 0 for card in range(108)])
+        return avail_actions
         
-    
     def _set_reward(self):
         '''
         setting rewards
@@ -220,9 +253,6 @@ class GuanDanEnv():
             else:
                 self.reward[self.cleared[0]] = 1
                 self.reward[(self.cleared[0] + 2) % 4] = 1
-    
-    def _raise_error(self, errno, detail):
-        raise Error(self.errset[errno]+": "+detail)
     
     def _end_game(self, fault_player):
         '''
@@ -258,12 +288,12 @@ class GuanDanEnv():
             return obs_set
         else:
             return { player: obs_set[player] }
-                
+        
     def _set_level(self):     
         self.point_order.remove(self.level)
         self.point_order.append(self.level)
         self.point_order.extend(["o", "O"])
-        
+
     def _is_legal_claim(self, action: list, claim: list):
         covering = "h" + self.level
         if len(action) != len(claim):
