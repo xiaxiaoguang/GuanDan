@@ -30,6 +30,9 @@ class GuanDanEnv():
             1: "PlayerAction Fault",
             2: "Game Fault"
         }
+        self.observation_space = [Box(low=0, high=1, shape=(150,), dtype=np.float32) for _ in range(self.n_agents)]
+        self.share_observation_space = [Box(low=0, high=1, shape=(600,), dtype=np.float32) for _ in range(self.n_agents)]
+        self.action_space = [Discrete(108) for _ in range(self.n_agents)]
 
     def reset(self, config={}):
         '''
@@ -222,7 +225,7 @@ class GuanDanEnv():
         return state
 
     def _get_avail_actions(self):
-        """生成可用动作掩码）"""
+        """生成可用动作掩码"""
         avail_actions = []
         for i in range(self.n_agents):
             if i in self.cleared:
