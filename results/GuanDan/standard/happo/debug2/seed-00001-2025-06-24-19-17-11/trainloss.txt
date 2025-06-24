@@ -1,0 +1,56 @@
+updates 7/375000 episodes, total num timesteps 56/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 133.53571428571428.
+
+updates 14/375000 episodes, total num timesteps 112/3000000, FPS 3.
+Average step reward is 0.0.
+Some episodes done, average episode reward is 133.76785714285714.
+
+updates 21/375000 episodes, total num timesteps 168/3000000, FPS 3.
+Average step reward is 2.0.
+Some episodes done, average episode reward is 137.77678571428572.
+
+updates 28/375000 episodes, total num timesteps 224/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 142.38392857142858.
+
+updates 35/375000 episodes, total num timesteps 280/3000000, FPS 3.
+Average step reward is 2.0.
+Some episodes done, average episode reward is 120.91071428571429.
+
+updates 42/375000 episodes, total num timesteps 336/3000000, FPS 3.
+Average step reward is 1.0.
+Some episodes done, average episode reward is 112.29464285714286.
+
+updates 49/375000 episodes, total num timesteps 392/3000000, FPS 3.
+Average step reward is 0.0.
+Some episodes done, average episode reward is 120.75.
+
+updates 56/375000 episodes, total num timesteps 448/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 126.5625.
+
+updates 63/375000 episodes, total num timesteps 504/3000000, FPS 3.
+Average step reward is 0.0.
+Some episodes done, average episode reward is 134.52678571428572.
+
+updates 70/375000 episodes, total num timesteps 560/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 150.32142857142858.
+
+updates 77/375000 episodes, total num timesteps 616/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 133.17857142857142.
+
+updates 84/375000 episodes, total num timesteps 672/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 152.95535714285714.
+
+updates 91/375000 episodes, total num timesteps 728/3000000, FPS 3.
+Average step reward is 3.0.
+Some episodes done, average episode reward is 140.32142857142858.
+
+updates 98/375000 episodes, total num timesteps 784/3000000, FPS 3.
+Average step reward is 0.0.
+Some episodes done, average episode reward is 115.63392857142857.
+
