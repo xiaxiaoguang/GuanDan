@@ -1,0 +1,4 @@
+updates 7/375000 episodes, total num timesteps 56/3000000, FPS 3.
+Average step reward is 0.0.
+Some episodes done, average episode reward is 144.02678571428572.
+

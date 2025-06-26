@@ -668,6 +668,9 @@ class GuanDanEnv():
         return True
     
     def _check_poker_type(self, poker: list):
+        '''
+        Check the type of poker, return a tuple (type, point)
+        '''
         if poker == []:
             return "pass", ()
         # covering = "h" + level
