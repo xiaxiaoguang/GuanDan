@@ -126,6 +126,8 @@ class GuanDanEnv():
     def _get_point_map(self, cards):
 
         point_map = {pt: [] for pt in self.cardscale + ["o", "O"]}
+        # print(self.cardscale)
+        # ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K']
         for c in cards:
             base_id = c % 54
             if base_id < 52:
@@ -191,6 +193,7 @@ class GuanDanEnv():
         """
 
         point_map = self._get_point_map(hand_cards)
+        
 
         def find_cards(point, count):
             # Find up to 'count' cards of a given point
@@ -320,6 +323,145 @@ class GuanDanEnv():
             cards = jokers[:4]
             if self.legal_check(cards, cards):
                 yield cards, cards, 366
+
+    def get_action_id(self, hand_cards):
+        """
+        Enumerate all valid actions given current 108-dim hand vector (0/1)
+        Yield: (action, claim, action_id)
+        """
+
+        point_map = self._get_point_map(hand_cards)
+        
+
+        def find_cards(point, count):
+            # Find up to 'count' cards of a given point
+            return point_map.get(point, [])[:count]
+
+        action_id = 0
+
+        # 0. Pass
+        if self.legal_check([],[]):
+            yield [], [], 0
+        action_id += 1
+        # 1–15: Single (A, 2, ..., Joker)
+        single_order = self.cardscale + ["o", "O"]  # x: joker, X: JOKER
+        for i, pt in enumerate(single_order):
+            cards = find_cards(pt, 1)
+            if len(cards) == 1:
+                if self.legal_check(cards, cards):
+                    yield cards, cards, action_id
+            action_id += 1
+
+        # 16–30: Pair
+        for i, pt in enumerate(single_order):
+            cards = find_cards(pt, 2)
+            if len(cards) == 2:
+                if self.legal_check(cards, cards):
+                    yield cards, cards, action_id
+            action_id += 1
+
+        # 31–43: Three of a kind
+        for i, pt in enumerate(self.cardscale):
+            cards = find_cards(pt, 3)
+            if len(cards) == 3:
+                if self.legal_check(cards, cards):
+                    yield cards, cards, action_id
+            action_id += 1
+
+        # 44–199: Three with Two (13 points × 12 combos)
+        for i, pt3 in enumerate(self.cardscale):
+            triple = find_cards(pt3, 3)
+
+            if len(triple) < 3:
+                action_id += 12
+                continue
+
+            for j, pt2 in enumerate(self.cardscale):
+                if pt2 == pt3:
+                    continue
+                pair = find_cards(pt2, 2)
+                if len(pair) == 2:
+                    cards = triple + pair
+                    if self.legal_check(cards, cards):
+                        yield cards, cards, action_id + j
+            
+            action_id += 12
+
+        # 200–211: Triple pairs (aa2233 → qqkkaa)
+        triple_pairs_start = self._generate_consecutive_pairs(length=3)
+        for i, start_pts in enumerate(triple_pairs_start):
+            all_cards = []
+            valid = True
+            for pt in start_pts:
+                cards = find_cards(pt, 2)
+                if len(cards) < 2:
+                    valid = False
+                    break
+                all_cards += cards
+            if valid and self.legal_check(all_cards, all_cards):
+                yield all_cards, all_cards, action_id
+            action_id += 1
+
+        # 212–224: Three-of-a-kind chains (aaa222 to kkkaaa)
+        triple_chains_start = self._generate_consecutive_triples(length=2)
+        for i, start_pts in enumerate(triple_chains_start):
+            all_cards = []
+            valid = True
+            for pt in start_pts:
+                cards = find_cards(pt, 3)
+                if len(cards) < 3:
+                    valid = False
+                    break
+                all_cards += cards
+            if valid and self.legal_check(all_cards, all_cards):
+                yield all_cards, all_cards, action_id
+            action_id += 1
+
+        # 225–234: Straights (a2345 to 10JQKA) → 10 options
+        straight_sets = self._generate_straights(length=5)
+        for pts in straight_sets:
+            cards = []
+            valid = True
+            for pt in pts:
+                c = find_cards(pt, 1)
+                if not c:
+                    valid = False
+                    break
+                cards += c
+            if valid and self.legal_check(cards, cards):
+                yield cards, cards, action_id
+            action_id += 1
+
+        # 235–325: Bombs (13 types × up to 7 sizes)
+        for i, pt in enumerate(self.cardscale):
+            for size in range(4, 11):
+                cards = find_cards(pt, size)
+                if len(cards) == size:
+                    if self.legal_check(cards, cards):
+                        yield cards ,cards ,action_id
+                action_id += 1
+
+        # 326–365: Straight Flush (10 types × 4 suits)
+        suits = [0,1,2,3]
+        for pts in straight_sets:
+            for suit in suits:
+                cards = []
+                for pt in pts:
+                    for card in point_map.get(pt, []):
+                        if card % 4 == suit:
+                            cards.append(card)
+                            break
+                if len(cards) == 5 and self.legal_check(cards, cards):
+                    yield cards, cards, action_id
+                action_id += 1
+
+        # 366: Rocket (4 jokers)
+        jokers = find_cards("x", 2) + find_cards("X", 2)
+        if len(jokers) >= 4:
+            cards = jokers[:4]
+            if self.legal_check(cards, cards):
+                yield cards, cards, 366
+
 
     def legal_check(self,claim,action):
         if not self._is_legal_claim(action, claim):
@@ -823,6 +965,5 @@ class GuanDanEnv():
 if __name__ == "__main__":
     env = GuanDanEnv()
     env.reset()
-    for i in env.enumerate_legal_actions([i for i in range(108)]):
-        print(i)
+    print(*env.enumerate_legal_actions([78,25,24,80]))
     

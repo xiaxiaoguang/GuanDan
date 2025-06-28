@@ -7,6 +7,14 @@ from harl.models.base.rnn import RNNLayer
 from harl.models.base.act import ACTLayer
 from harl.models.policy_models.baseline_kid import make_decision
 from harl.utils.envs_tools import get_shape_from_obs_space
+from harl.envs.GuanDanEnv.env import GuanDanEnv
+
+def json_to_action(json_response):
+    env = GuanDanEnv()
+    env.reset()
+    return env.get_action_id(json_response)
+
+
 
 class ExpertPolicy(nn.Module):
     """Expert policy model. Outputs actions given observations."""
@@ -51,9 +59,6 @@ class ExpertPolicy(nn.Module):
         )
 
         self.to(device)
-        
-    def history_to_json(self, history):
-        pass
         
 
     def forward(
