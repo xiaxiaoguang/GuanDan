@@ -180,8 +180,8 @@ class GuanDanEnv():
         extended = pure_order + pure_order[:length - 1]
         for i in range(len(pure_order)):
             group = extended[i:i+length]
-            if '2' in group and group != ['A', '2', '3', '4', '5']:
-                continue  # 2 can only appear in A-2-3-4-5
+            # if '2' in group and group != ['A', '2', '3', '4', '5']:
+                # continue  # 2 can only appear in A-2-3-4-5
             valid.append(group)
         return valid
 
@@ -326,141 +326,109 @@ class GuanDanEnv():
 
     def get_action_id(self, hand_cards):
         """
-        Enumerate all valid actions given current 108-dim hand vector (0/1)
-        Yield: (action, claim, action_id)
+        write a mapping from hand_cards(a list of card_id, index from 0 to 107) to action_id(order listed as below)
         """
 
+        # 1 (Pass)
+        # 15 (Single)
+        # + 15 (Pair)
+        # + 13 (Three)
+        # + 156 (Three with Two)
+        # + 12 (Triple Pairs)
+        # + 13 (Three of a Kind Chains)
+        # + 10 (Straights)
+        # + 91 (Bombs)
+        # + 40 (Straight Flush)
+        # + 1 (Rocket)
+        # = ⭐ 367 actions ⭐
+        
         point_map = self._get_point_map(hand_cards)
         
-
-        def find_cards(point, count):
-            # Find up to 'count' cards of a given point
-            return point_map.get(point, [])[:count]
-
-        action_id = 0
-
-        # 0. Pass
-        if self.legal_check([],[]):
-            yield [], [], 0
-        action_id += 1
-        # 1–15: Single (A, 2, ..., Joker)
-        single_order = self.cardscale + ["o", "O"]  # x: joker, X: JOKER
-        for i, pt in enumerate(single_order):
-            cards = find_cards(pt, 1)
-            if len(cards) == 1:
-                if self.legal_check(cards, cards):
-                    yield cards, cards, action_id
-            action_id += 1
-
-        # 16–30: Pair
-        for i, pt in enumerate(single_order):
-            cards = find_cards(pt, 2)
-            if len(cards) == 2:
-                if self.legal_check(cards, cards):
-                    yield cards, cards, action_id
-            action_id += 1
-
-        # 31–43: Three of a kind
-        for i, pt in enumerate(self.cardscale):
-            cards = find_cards(pt, 3)
-            if len(cards) == 3:
-                if self.legal_check(cards, cards):
-                    yield cards, cards, action_id
-            action_id += 1
-
-        # 44–199: Three with Two (13 points × 12 combos)
-        for i, pt3 in enumerate(self.cardscale):
-            triple = find_cards(pt3, 3)
-
-            if len(triple) < 3:
-                action_id += 12
-                continue
-
-            for j, pt2 in enumerate(self.cardscale):
-                if pt2 == pt3:
-                    continue
-                pair = find_cards(pt2, 2)
-                if len(pair) == 2:
-                    cards = triple + pair
-                    if self.legal_check(cards, cards):
-                        yield cards, cards, action_id + j
+        if len(hand_cards) == 0:
+            return 0
+        elif len(hand_cards) == 1:
+            # Single
+            pt = self.Utils.Num2Poker(hand_cards[0])[1]
+            if pt in self.cardscale + ["o", "O"]:
+                return 1 + (self.cardscale + ["o", "O"]).index(pt)
+            else:
+                return -1
+        elif len(hand_cards) == 2:
+            # Pair
+            pt0 = self.Utils.Num2Poker(hand_cards[0])[1]
+            pt1 = self.Utils.Num2Poker(hand_cards[1])[1]
+            if pt0 == pt1 and pt0 in self.cardscale + ["o", "O"]:
+                return 16 + (self.cardscale + ["o", "O"]).index(pt0)
+            else:
+                return -1
+        elif len(hand_cards) == 3:
+            # Three of a kind
+            pt0 = self.Utils.Num2Poker(hand_cards[0])[1]
+            pt1 = self.Utils.Num2Poker(hand_cards[1])[1]
+            pt2 = self.Utils.Num2Poker(hand_cards[2])[1]
+            if pt0 == pt1 and pt1 == pt2 and pt0 in self.cardscale:
+                return 31 + (self.cardscale + ["o", "O"]).index(pt0)
+            else:
+                return -1
             
-            action_id += 12
-
-        # 200–211: Triple pairs (aa2233 → qqkkaa)
-        triple_pairs_start = self._generate_consecutive_pairs(length=3)
-        for i, start_pts in enumerate(triple_pairs_start):
-            all_cards = []
-            valid = True
-            for pt in start_pts:
-                cards = find_cards(pt, 2)
-                if len(cards) < 2:
-                    valid = False
-                    break
-                all_cards += cards
-            if valid and self.legal_check(all_cards, all_cards):
-                yield all_cards, all_cards, action_id
-            action_id += 1
-
-        # 212–224: Three-of-a-kind chains (aaa222 to kkkaaa)
-        triple_chains_start = self._generate_consecutive_triples(length=2)
-        for i, start_pts in enumerate(triple_chains_start):
-            all_cards = []
-            valid = True
-            for pt in start_pts:
-                cards = find_cards(pt, 3)
-                if len(cards) < 3:
-                    valid = False
-                    break
-                all_cards += cards
-            if valid and self.legal_check(all_cards, all_cards):
-                yield all_cards, all_cards, action_id
-            action_id += 1
-
-        # 225–234: Straights (a2345 to 10JQKA) → 10 options
-        straight_sets = self._generate_straights(length=5)
-        for pts in straight_sets:
-            cards = []
-            valid = True
-            for pt in pts:
-                c = find_cards(pt, 1)
-                if not c:
-                    valid = False
-                    break
-                cards += c
-            if valid and self.legal_check(cards, cards):
-                yield cards, cards, action_id
-            action_id += 1
-
-        # 235–325: Bombs (13 types × up to 7 sizes)
-        for i, pt in enumerate(self.cardscale):
-            for size in range(4, 11):
-                cards = find_cards(pt, size)
-                if len(cards) == size:
-                    if self.legal_check(cards, cards):
-                        yield cards ,cards ,action_id
-                action_id += 1
-
-        # 326–365: Straight Flush (10 types × 4 suits)
-        suits = [0,1,2,3]
-        for pts in straight_sets:
-            for suit in suits:
-                cards = []
-                for pt in pts:
-                    for card in point_map.get(pt, []):
-                        if card % 4 == suit:
-                            cards.append(card)
-                            break
-                if len(cards) == 5 and self.legal_check(cards, cards):
-                    yield cards, cards, action_id
-                action_id += 1
-
-        # 366: Rocket (4 jokers)
-        jokers = find_cards("x", 2) + find_cards("X", 2)
-        if len(jokers) >= 4:
-            cards = jokers[:4]
-            if self.legal_check(cards, cards):
-                yield cards, cards, 366
+        elif len(hand_cards) >= 4:
+            point_count = Counter([self.Utils.Num2Poker(c)[1] for c in hand_cards])
+            
+            # Three with Two
+            if len(point_count) == 2 and len(hand_cards) == 5:
+                pt3, pt2 = point_count.most_common(2)
+                if pt3[1] == 3 and pt2[1] == 2:
+                    return 44 + (self.cardscale + ["o", "O"]).index(pt3[0]) * 12 + (self.cardscale + ["o", "O"]).index(pt2[0])
+                elif pt3[1] == 2 and pt2[1] == 3:
+                    return 44 + (self.cardscale + ["o", "O"]).index(pt2[0]) * 12 + (self.cardscale + ["o", "O"]).index(pt3[0])
+                
+            # Pairs Chains
+            elif len(point_count) == 3 and all(v == 2 for v in point_count.values()):
+                # sort according to cardscale
+                pts = sorted(point_count.keys(), key=lambda x: (self.cardscale + ["o", "O"]).index(x))
+                # print(self._generate_consecutive_pairs())
+                if pts in self._generate_consecutive_pairs():
+                    return 200 + self._generate_consecutive_pairs().index(pts[:3])
+                elif pts == ['A', 'Q', 'K']:
+                    return 200 + self._generate_consecutive_pairs().index(['Q', 'K', 'A'])
+                
+            # Triple Pairs
+            elif len(point_count) == 2 and all(v == 3 for v in point_count.values()):
+                pts = sorted(point_count.keys(), key=lambda x: (self.cardscale + ["o", "O"]).index(x))
+                if pts in self._generate_consecutive_triples():
+                    return 212 + self._generate_consecutive_triples().index(pts[:2])
+                elif pts == ['A', 'K']:
+                    return 212 + self._generate_consecutive_triples().index(['K', 'A'])
+                
+            # Straights
+            elif len(hand_cards) == 5 and len(point_count) == 5:
+                pts = [self.Utils.Num2Poker(c)[1] for c in hand_cards]
+                # print(self._generate_straights())
+                if all(pt in self.cardscale for pt in pts):
+                    pts.sort(key=lambda x: (self.cardscale + ["o", "O"]).index(x))
+                    # print('pts',pts)
+                    if pts in self._generate_straights():
+                        return 225 + self._generate_straights().index(pts)
+                    elif pts == ['A', '0', 'J', 'Q', 'K']:
+                        return 225 + self._generate_straights().index(['0', 'J', 'Q', 'K', 'A'])
+                        
+            # Bombs
+            elif len(hand_cards) <= 10 and len(point_count) == 1:
+                pt = self.Utils.Num2Poker(hand_cards[0])[1]
+                return 238 + (len(hand_cards) - 4) + (self.cardscale).index(pt) * 7
+            # Straight Flush
+            elif len(hand_cards) == 5:
+                suits = [c % 4 for c in hand_cards]
+                if len(set(suits)) == 1:
+                    pts = [self.Utils.Num2Poker(c)[1] for c in hand_cards]
+                    if all(pt in self.cardscale for pt in pts):
+                        pts.sort(key=lambda x: (self.cardscale + ["o", "O"]).index(x))
+                        if pts in self._generate_straights():
+                            return 326 + self._generate_straights().index(pts) * 4 + suits[0]
+            # Rocket
+            elif len(hand_cards) == 4 and all(self.Utils.Num2Poker(c)[1] in ["o", "O"] for c in hand_cards):
+                return 366
+        return -1  # Invalid action
 
 
     def legal_check(self,claim,action):
@@ -965,5 +933,54 @@ class GuanDanEnv():
 if __name__ == "__main__":
     env = GuanDanEnv()
     env.reset()
-    print(*env.enumerate_legal_actions([78,25,24,80]))
+    test_data = [
+        # ['h7'],
+        # ['jo','jo'],
+        
+        # ['c8','d8','s8'], # 38
+        # ['c0','d0','s0'], # 40
+        # ['cA','dA','sA'], # 31
+        # ['c2','d2','s2'], # 32
+        
+        # ['hA','h2','s3','h4','d5'], # 236
+        # ['h2','s3','h4','d5','c6'], # 237
+        # ['h9','s0','hJ','sQ','cK'], # 231
+        # ['s0','sJ','hQ','dK','dA'], # 232
+        # ['s0','sJ','hA','dK','dQ'], # 232
+        # ['h5','s3','h2','d4','c6'], # 237
+        
+        # ['h0','s0','sJ','hQ','dJ','cQ'], # 209
+        # ['dA','sA','s2','h3','d2','c3'], # 200
+        # ['hA','sQ','sK','hQ','dK','cA'], # 211
+        # ['h2','s2','s4','h3','d3','c4'], # 201
+        # ['d0','s9','s8','h8','d9','c0'], # 207
+        # ['h4','s5','s6','h5','d4','c6'], # 203
+        
+        # ['cK','dK','sK','cA','dA'], # 188
+        # ['cA','dA','sA','c2','d2'], # 45
+        # ['c0','d0','s0','cA','dA'], # 152
+        
+        # ['h9','d9','s9','d0','c0','h0'], # 220
+        # ['hJ','dJ','sJ','d0','c0','h0'], # 221
+        # ['hA','dA','sA','d2','c2','h2'], # 212
+        # ['hA','dA','sA','dK','cK','hK'], # 224
+        
+        # ['jo','jo','jO','jO'],
+        
+        # ['hA','hA','dA','dA','sA'], #239
+        # ['hA','hA','dA','dA','sA','cA'], #240
+        # ['h2','h2','d2','d2','s2','c2'], #247
+        # ['h3','h3','d3','d3','s3','c3'], #254
+        # ['h2','h2','d2','d2','s2','c2','c2'], #248
+        # ['h3','h3','d3','c3','c3'], #253
+        # ['hJ','dJ','sJ','cJ','cJ'], #309
+        
+    ]
+    for tt in test_data:
+        hand_cards = [env.Utils.Poker2Num(p,[]) for p in tt]
+        print("#"*10)
+        print(env.get_action_id(hand_cards))
+        print(*env.enumerate_legal_actions(hand_cards))
+        for i in hand_cards:
+            print(env.Utils.Num2Poker(i))
     
