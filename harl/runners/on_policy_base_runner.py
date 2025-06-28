@@ -188,6 +188,10 @@ class OnPolicyBaseRunner:
             return
         
         print("start running")
+        
+        ###0629###
+        # 这里会初始化生成轨迹来填充buffer！
+        
         self.warmup()
 
         episodes = (
@@ -298,7 +302,11 @@ class OnPolicyBaseRunner:
     def warmup(self):
         """Warm up the replay buffer."""
         # reset env
-        obs, share_obs, available_actions = self.envs.reset()
+        
+        ###0629###
+        # 注意reset也会返回available_actions!!!
+        
+        obs, share_obs, available_actions, history = self.envs.reset()
         # replay buffer
         for agent_id in range(self.num_agents):
             self.actor_buffer[agent_id].obs[0] = obs[:, agent_id].copy()
@@ -306,6 +314,10 @@ class OnPolicyBaseRunner:
                 self.actor_buffer[agent_id].available_actions[0] = available_actions[
                     :, agent_id
                 ].copy()
+                # self.actor_buffer[agent_id].available_actions[0] = available_actions.copy()
+                
+            ###0629
+            self.actor_buffer[agent_id].history_buffer[0] = history.copy()
                 
         if self.state_type == "EP":
             self.critic_buffer.share_obs[0] = share_obs[:, 0].copy()

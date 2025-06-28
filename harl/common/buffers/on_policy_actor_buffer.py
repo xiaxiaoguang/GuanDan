@@ -51,8 +51,16 @@ class OnPolicyActorBuffer:
         #         dtype=np.float32,
         #     )
         # else:
-        self.available_actions = None
+        
+        ###0629
+        ### 注意必须不能设置成None！否则永远不会往里放东西！
+        
+        # self.available_actions = None
 
+        ###0629
+        # 需要设置一个新的buffer
+        self.history_buffer = [[] for _ in range(self.episode_length + 1)]
+        
         act_shape = get_shape_from_act_space(act_space)
 
         # Buffer for actions of this actor.

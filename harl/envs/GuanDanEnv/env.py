@@ -4,6 +4,12 @@ from harl.envs.GuanDanEnv.utils import Utils, Error
 import warnings
 from collections import Counter
 from gym import spaces
+from copy import deepcopy
+
+def to_one_hot(x):
+    one_hot = np.zeros(108, dtype=np.int8)
+    one_hot[x] = 1
+    return one_hot
 
 class GuanDanEnv():
     '''
@@ -94,7 +100,9 @@ class GuanDanEnv():
         random.shuffle(self.card_todeal)
         self.player_decks = [self.card_todeal[dpos*27 : (dpos+1) * 27] for dpos in range(4)]
         self.done = False
-        self.history = []  
+        self.history = []
+        for dpos in range(4):
+            self.history.append(to_one_hot(self.player_decks[dpos]))
         self.round = 0
         self.played_cards = [[] for _ in range(4)]
         self.reward = {
@@ -112,7 +120,7 @@ class GuanDanEnv():
         self.cleared = []
         self.game_state_info = "Running"
         # You just need to implement this function , by parameter 0 it return a correct obs of player 0
-        return self.get_obs(), self.get_state(), None
+        return self.get_obs(), self.get_state(), None, self.history
 
 
     def get_obs(self):
@@ -475,7 +483,7 @@ class GuanDanEnv():
         prob_vector = prob_vector[0]
         curr_player = self.curr_player
         hand = self.player_decks[curr_player]
-        print(hand)
+        # print(hand)
         legal_actions = self.enumerate_legal_actions(hand)  # List of (action, claim, id)
         best_id = -1
         best_prob = -np.inf
@@ -570,7 +578,9 @@ class GuanDanEnv():
                 self.lastMove = response
                 self.pass_on = -1
 
-        self.history.append(response)
+        # print(response) ###0628###
+        self.history.append(to_one_hot(action))  # Record the action in history
+        self.history.append(to_one_hot(claim))  # Record the claim in history
 
         # Check if player cleared all cards
         if len(self.player_decks[curr_player]) == 0:
@@ -607,7 +617,7 @@ class GuanDanEnv():
         share_obs = np.array([self.get_state() for _ in range(4)])
         dones = np.array([len(self.player_decks[i]) == 0 or self.done for i in range(4)])
         infos = [{"state": self.game_state_info, "actions" : action}]
-        return obs, share_obs, rewards, dones, infos, None
+        return obs, share_obs, rewards, dones, infos, None, self.history
         
     def _set_reward(self,curr_player):
         '''

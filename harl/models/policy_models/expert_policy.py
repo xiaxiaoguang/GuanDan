@@ -14,7 +14,11 @@ def json_to_action(json_response):
     env.reset()
     return env.get_action_id(json_response)
 
-
+def history_to_json(info):
+    """Convert history to JSON format for decision making."""
+    json_format = {"requests": [], "responses": []}
+    print("info",info)
+    
 
 class ExpertPolicy(nn.Module):
     """Expert policy model. Outputs actions given observations."""
@@ -78,8 +82,7 @@ class ExpertPolicy(nn.Module):
             rnn_states: (torch.Tensor) updated RNN hidden states.
         """
 
-        history = available_actions
-        json_input = history_to_json(history)
+        json_input = history_to_json(available_actions)
         response = make_decision(json_input)         # format: {"response": [[98, 47, 101, 100], [98, 47, 101, 100]]}
         actions = json_to_action(response["response"][0])
         
