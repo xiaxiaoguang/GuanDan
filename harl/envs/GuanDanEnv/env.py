@@ -77,7 +77,6 @@ class GuanDanEnv():
         '''
         Call this function to start different matches
         @ config: contains match initalization info
-
         '''
         if 'seed' in config:
             self.seed = config['seed']
@@ -366,6 +365,7 @@ class GuanDanEnv():
         prob_vector = prob_vector[0]
         curr_player = self.curr_player
         hand = self.player_decks[curr_player]
+        print(hand)
         legal_actions = self.enumerate_legal_actions(hand)  # List of (action, claim, id)
         best_id = -1
         best_prob = -np.inf
@@ -375,7 +375,7 @@ class GuanDanEnv():
         for action, claim, act_id in legal_actions:
             if act_id < 0 or act_id >= 367:
                 continue
-
+ 
             prob = prob_vector[act_id]
 
             if prob > best_prob or best_id < 0:
@@ -402,11 +402,19 @@ class GuanDanEnv():
 
     def step(self, action):
 
+        ###0628###
+        # print("Action:", action.shape)
+        # (4, 367)
+
         self.round += 1
         response = self.id2response(action)  # Convert ID to actual action + claim
         curr_player = response["player"]
         action = response["action"]
         claim = response["claim"]
+        
+        ###0628###
+        # print("response:", response)
+        # response: {'player': 3, 'action': [62, 63, 8, 29, 83], 'claim': [62, 63, 8, 29, 83], 'action_id': 75}
 
         # Error checking
         # if not self._is_legal_claim(action, claim):
@@ -480,6 +488,9 @@ class GuanDanEnv():
                 self.lastMove = {"player": -1, "action": [], "claim": [] , 'action_id' : 0}
 
             self.curr_player = next_player
+
+        ###0628###
+        # print("History:", self.history)
 
         # === Prepare output ===
         obs = self.get_obs()
@@ -807,4 +818,11 @@ class GuanDanEnv():
                 if self.cardscale.index(point2[0]) > self.cardscale.index(point1[0]):
                     return True
         return False
+    
+    
+if __name__ == "__main__":
+    env = GuanDanEnv()
+    env.reset()
+    for i in env.enumerate_legal_actions([i for i in range(108)]):
+        print(i)
     

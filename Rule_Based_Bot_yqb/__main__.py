@@ -1,8 +1,3 @@
-'''
-@author: 杨奇滨
-@date: 2024-12-14-2025.1.9
-@description: 一个掼蛋AI bot
-'''
 import json
 from expert_utils import *
 from expert_env import *
@@ -12,7 +7,9 @@ if __name__ == "__main__":
     # 初始化环境
     env=ExpertGuanDanEnv()
     # 解析读入的JSON
-    full_input = json.loads(input())
+    # full_input = json.loads(input())
+    with open("testAI.json", "r") as f:
+        full_input = json.load(f)
 
     # 分析自己收到的输入和自己过往的输出，并恢复状态
     all_requests = full_input["requests"]

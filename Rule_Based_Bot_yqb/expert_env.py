@@ -104,6 +104,17 @@ class ExpertGuanDanEnv():
             self.remaining_card_without_color[card_num]-=1
             self.remaining_card_with_color[card_num][color]-=1
     
+    def update_card_nums(self,history,done):
+        '''
+        update_card_nums函数:用于更新当前手牌的数量
+        输入:
+            history: 历史记录，包含每个人的出牌记录
+            done: 是否结束
+        '''
+        pass
+        
+    
+    
     def group_into_1234(self):
         for card_num, num_of_cards in self.remaining_card_without_color.items():
             if num_of_cards >= 4:

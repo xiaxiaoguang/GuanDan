@@ -4,8 +4,8 @@
 @description: 一个掼蛋AI bot
 '''
 import json
-from expert_utils import *
-from expert_env import *
+from .expert_utils import *
+from .expert_env import *
     
    
 class State:

@@ -230,6 +230,9 @@ class OnPolicyBaseRunner:
                         rnn_state_critic,
                     ) = self.collect(step, agent_id=curr_player)
 
+                    ###0628###
+                    # print(action.shape)  # (n_threads, n_agents, action_dim)
+
                     (
                         obs,
                         share_obs,
@@ -238,7 +241,7 @@ class OnPolicyBaseRunner:
                         infos,
                         available_actions,
                     ) = self.envs.step(action)
-
+                    
                     # Save transition (reward is just 0 for now)
                     trajectory_buffer[curr_player].append(
                         (

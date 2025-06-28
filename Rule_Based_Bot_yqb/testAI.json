@@ -3,33 +3,33 @@
 		{
 			"stage": "deal",
 			"deliver": [
-				61,
-				85,
-				96,
-				22,
-				76,
+				99,
+				49,
+				104,
+				8,
+				16,
 				39,
-				50,
-				41,
-				72,
-				107,
-				43,
-				51,
-				94,
-				59,
-				40,
-				83,
-				2,
-				44,
-				48,
+				5,
+				34,
+				78,
+				106,
+				98,
+				71,
 				25,
-				13,
-				30,
-				53,
-				46,
+				89,
 				14,
-				103,
-				58
+				2,
+				73,
+				42,
+				23,
+				96,
+				47,
+				83,
+				24,
+				101,
+				80,
+				100,
+				88
 			],
 			"your_id": 0,
 			"global": {
@@ -66,255 +66,45 @@
 					"player": 0,
 					"response": [
 						[
-							13,
-							72,
-							22,
-							25,
-							30
-						],
-						[
-							13,
-							72,
-							22,
-							25,
-							30
-						]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[
-							16,
-							73,
-							71,
-							18,
-							19
-						],
-						[
-							16,
-							73,
-							71,
-							18,
-							19
-						]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[
-							62,
-							66,
-							70,
-							20,
-							24
-						],
-						[
-							62,
-							66,
-							70,
-							20,
-							24
-						]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[],
-						[]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[
-							81,
-							78,
-							80,
-							15,
-							68
-						],
-						[
-							81,
-							78,
-							80,
-							15,
-							68
-						]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[
-							11,
-							10,
-							8,
-							65
-						],
-						[
-							11,
-							10,
-							8,
-							65
-						]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[
-							96,
-							41,
-							94,
-							40
-						],
-						[
-							96,
-							41,
-							94,
-							40
-						]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[],
-						[]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[
-							50,
-							48,
-							103,
-							85,
-							83
-						],
-						[
-							50,
-							48,
-							103,
-							85,
-							83
-						]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[
-							55,
-							1,
-							56,
-							64,
-							9
-						],
-						[
-							55,
-							1,
-							56,
-							64,
-							9
-						]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[
-							33,
+							83,
 							34,
-							89,
-							86
+							39,
+							42,
+							99
 						],
 						[
-							33,
+							83,
 							34,
-							89,
-							86
+							39,
+							42,
+							99
 						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							28,
+							86,
+							36,
+							94,
+							44
+						],
+						[
+							28,
+							86,
+							36,
+							94,
+							44
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
 					]
 				},
 				{
@@ -350,168 +140,280 @@
 				{
 					"player": 1,
 					"response": [
+						[
+							37
+						],
+						[
+							37
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							45
+						],
+						[
+							45
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							27,
+							81,
+							26,
+							79
+						],
+						[
+							27,
+							81,
+							26,
+							79
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							98,
+							47,
+							101,
+							100
+						],
+						[
+							98,
+							47,
+							101,
+							100
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
 						[],
 						[]
 					]
 				},
 				{
 					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
 					"response": [
 						[
 							0,
-							5,
-							63,
-							17,
+							54,
+							3,
+							55
+						],
+						[
+							0,
+							54,
+							3,
+							55
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							59,
+							61,
+							6,
 							4
 						],
 						[
-							0,
-							5,
+							59,
+							61,
+							6,
+							59
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							67,
+							15,
+							72,
+							18,
+							22,
+							74
+						],
+						[
+							67,
+							15,
+							72,
+							18,
+							22,
+							74
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							9,
 							63,
-							17,
-							68
-						]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[
-							21,
-							77,
-							23,
-							75
+							64,
+							11
 						],
 						[
-							21,
-							77,
-							23,
-							75
+							9,
+							63,
+							64,
+							11
 						]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[],
-						[]
 					]
 				},
 				{
 					"player": 2,
 					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
 						[
-							35,
-							32,
-							88,
-							12,
-							67
-						],
-						[
-							35,
-							32,
-							88,
-							12,
-							67
-						]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[
-							61,
-							59,
-							58,
-							44,
-							46
-						],
-						[
-							61,
-							59,
-							58,
-							44,
-							46
-						]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[
-							37,
-							38,
-							36,
+							90,
 							92,
-							91
+							91,
+							93
 						],
 						[
-							37,
-							38,
-							36,
+							90,
 							92,
-							91
+							91,
+							93
 						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
 					]
 				}
 			],
@@ -547,74 +449,26 @@
 				{
 					"player": 2,
 					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
 						[
-							99,
-							45,
-							100,
-							49,
-							105
-						],
-						[
-							99,
-							45,
-							100,
-							49,
-							105
-						]
-					]
-				}
-			],
-			"done": [],
-			"pass_on": -1,
-			"global": {
-				"level": "2",
-				"tribute": 0,
-				"first": null,
-				"last": null,
-				"tribute_cards": {},
-				"return_cards": {},
-				"resist": false
-			}
-		},
-		{
-			"stage": "play",
-			"history": [
-				{
-					"player": 0,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 1,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 2,
-					"response": [
-						[],
-						[]
-					]
-				},
-				{
-					"player": 3,
-					"response": [
-						[
+							31,
 							29
 						],
 						[
+							31,
 							29
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							33,
+							87
+						],
+						[
+							33,
+							87
 						]
 					]
 				}
@@ -638,11 +492,77 @@
 					"player": 0,
 					"response": [
 						[
-							39
+							49,
+							104
 						],
 						[
-							39
+							49,
+							104
 						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							75,
+							21,
+							77,
+							76
+						],
+						[
+							75,
+							21,
+							77,
+							76
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							102,
+							48,
+							51,
+							105
+						],
+						[
+							102,
+							48,
+							51,
+							105
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
 					]
 				},
 				{
@@ -656,10 +576,10 @@
 					"player": 2,
 					"response": [
 						[
-							97
+							35
 						],
 						[
-							97
+							35
 						]
 					]
 				},
@@ -667,10 +587,10 @@
 					"player": 3,
 					"response": [
 						[
-							98
+							107
 						],
 						[
-							98
+							107
 						]
 					]
 				}
@@ -690,6 +610,563 @@
 		{
 			"stage": "play",
 			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							68,
+							12
+						],
+						[
+							68,
+							12
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							89,
+							88
+						],
+						[
+							89,
+							88
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							43,
+							41
+						],
+						[
+							43,
+							41
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							1,
+							57
+						],
+						[
+							1,
+							57
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							97,
+							40
+						],
+						[
+							97,
+							40
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							50,
+							103
+						],
+						[
+							50,
+							103
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							78,
+							25,
+							24,
+							80
+						],
+						[
+							78,
+							25,
+							24,
+							80
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							16,
+							71,
+							73
+						],
+						[
+							16,
+							71,
+							73
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							8
+						],
+						[
+							8
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							53
+						],
+						[
+							53
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							69,
+							13
+						],
+						[
+							69,
+							13
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							30,
+							82
+						],
+						[
+							30,
+							82
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							38
+						],
+						[
+							38
+						]
+					]
+				}
+			],
+			"done": [],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 0,
+					"response": [
+						[
+							96
+						],
+						[
+							96
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							46
+						],
+						[
+							46
+						]
+					]
+				},
+				{
+					"player": 2,
+					"response": [
+						[
+							58
+						],
+						[
+							58
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							52
+						],
+						[
+							52
+						]
+					]
+				}
+			],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
+						[
+							52
+						],
+						[
+							52
+						]
+					]
+				},
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							95
+						],
+						[
+							95
+						]
+					]
+				}
+			],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
+						[
+							95
+						],
+						[
+							95
+						]
+					]
+				},
 				{
 					"player": 0,
 					"response": [
@@ -704,12 +1181,167 @@
 				{
 					"player": 1,
 					"response": [
+						[
+							7
+						],
+						[
+							7
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
 						[],
 						[]
 					]
 				},
 				{
-					"player": 2,
+					"player": 0,
+					"response": [
+						[
+							106
+						],
+						[
+							106
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 0,
+					"response": [
+						[
+							14
+						],
+						[
+							14
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[
+							56
+						],
+						[
+							56
+						]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[
+							60
+						],
+						[
+							60
+						]
+					]
+				}
+			],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
+						[
+							60
+						],
+						[
+							60
+						]
+					]
+				},
+				{
+					"player": 0,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 1,
 					"response": [
 						[],
 						[]
@@ -719,15 +1351,71 @@
 					"player": 3,
 					"response": [
 						[
-							6
+							32
 						],
 						[
-							6
+							32
 						]
 					]
 				}
 			],
-			"done": [],
+			"done": [
+				2
+			],
+			"pass_on": -1,
+			"global": {
+				"level": "2",
+				"tribute": 0,
+				"first": null,
+				"last": null,
+				"tribute_cards": {},
+				"return_cards": {},
+				"resist": false
+			}
+		},
+		{
+			"stage": "play",
+			"history": [
+				{
+					"player": 3,
+					"response": [
+						[
+							32
+						],
+						[
+							32
+						]
+					]
+				},
+				{
+					"player": 0,
+					"response": [
+						[
+							5
+						],
+						[
+							5
+						]
+					]
+				},
+				{
+					"player": 1,
+					"response": [
+						[],
+						[]
+					]
+				},
+				{
+					"player": 3,
+					"response": [
+						[],
+						[]
+					]
+				}
+			],
+			"done": [
+				2
+			],
 			"pass_on": -1,
 			"global": {
 				"level": "2",
@@ -744,52 +1432,109 @@
 		[],
 		[
 			[
-				13,
-				72,
-				22,
+				83,
+				34,
+				39,
+				42,
+				99
+			],
+			[
+				83,
+				34,
+				39,
+				42,
+				99
+			]
+		],
+		[
+			[],
+			[]
+		],
+		[
+			[
+				98,
+				47,
+				101,
+				100
+			],
+			[
+				98,
+				47,
+				101,
+				100
+			]
+		],
+		[],
+		[],
+		[
+			[],
+			[]
+		],
+		[
+			[],
+			[]
+		],
+		[
+			[
+				49,
+				104
+			],
+			[
+				49,
+				104
+			]
+		],
+		[],
+		[
+			[],
+			[]
+		],
+		[
+			[
+				89,
+				88
+			],
+			[
+				89,
+				88
+			]
+		],
+		[
+			[],
+			[]
+		],
+		[
+			[
+				78,
 				25,
-				30
+				24,
+				80
 			],
 			[
-				13,
-				72,
-				22,
+				78,
 				25,
-				30
+				24,
+				80
 			]
 		],
 		[
-			[],
-			[]
-		],
-		[
 			[
-				96,
-				41,
-				94,
-				40
+				16,
+				71,
+				73
 			],
 			[
-				96,
-				41,
-				94,
-				40
+				16,
+				71,
+				73
 			]
 		],
 		[
 			[
-				50,
-				48,
-				103,
-				85,
-				83
+				8
 			],
 			[
-				50,
-				48,
-				103,
-				85,
-				83
+				8
 			]
 		],
 		[
@@ -802,35 +1547,15 @@
 		],
 		[
 			[
-				61,
-				59,
-				58,
-				44,
-				46
+				96
 			],
 			[
-				61,
-				59,
-				58,
-				44,
-				46
+				96
 			]
 		],
 		[
 			[],
 			[]
-		],
-		[
-			[],
-			[]
-		],
-		[
-			[
-				39
-			],
-			[
-				39
-			]
 		],
 		[
 			[
@@ -838,6 +1563,34 @@
 			],
 			[
 				2
+			]
+		],
+		[
+			[
+				106
+			],
+			[
+				106
+			]
+		],
+		[
+			[
+				14
+			],
+			[
+				14
+			]
+		],
+		[
+			[],
+			[]
+		],
+		[
+			[
+				5
+			],
+			[
+				5
 			]
 		]
 	]

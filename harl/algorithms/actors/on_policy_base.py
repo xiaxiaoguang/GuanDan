@@ -38,7 +38,7 @@ class OnPolicyBase:
         if agent_id is None or agent_id % 2 == 0:  # for even agent_id, use stochastic policy
             self.actor = StochasticPolicy(args, self.obs_space, self.act_space, self.device)
         else:
-            self.actor = ExpertPolicy()
+            self.actor = ExpertPolicy(args, self.obs_space, self.act_space, self.device)
             
         # create actor optimizer
         self.actor_optimizer = torch.optim.Adam(
@@ -70,15 +70,15 @@ class OnPolicyBase:
         """
         
         ###0628### 
-        print('obs', obs)
+        # print('obs', obs)
         
         actions, action_log_probs, rnn_states_actor = self.actor(
             obs, rnn_states_actor, masks, available_actions, deterministic
         )
         
         ####0628###
-        print('actions', actions)
-        print('action_log_probs', action_log_probs)
+        # print('actions', actions)
+        # print('action_log_probs', action_log_probs.shape)
         
         return actions, action_log_probs, rnn_states_actor
 
