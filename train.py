@@ -96,6 +96,7 @@ def main():
     # start training
     from harl.runners import RUNNER_REGISTRY
     runner = RUNNER_REGISTRY[args["algo"]](args, algo_args, env_args)
+    ###0628### print(type(runner))  # <class 'harl.runners.on_policy_ha_runner.OnPolicyHARunner'>
     runner.run()
     runner.close()
 

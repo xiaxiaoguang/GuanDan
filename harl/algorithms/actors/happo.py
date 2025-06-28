@@ -8,7 +8,7 @@ from harl.algorithms.actors.on_policy_base import OnPolicyBase
 
 
 class HAPPO(OnPolicyBase):
-    def __init__(self, args, obs_space, act_space, device=torch.device("cpu")):
+    def __init__(self, args, obs_space, act_space, device=torch.device("cpu"), agent_id=None):
         """Initialize HAPPO algorithm.
         Args:
             args: (dict) arguments.
@@ -16,7 +16,7 @@ class HAPPO(OnPolicyBase):
             act_space: (gym.spaces) action space.
             device: (torch.device) device to use for tensor operations.
         """
-        super(HAPPO, self).__init__(args, obs_space, act_space, device)
+        super(HAPPO, self).__init__(args, obs_space, act_space, device, agent_id)
 
         self.clip_param = args["clip_param"]
         self.ppo_epoch = args["ppo_epoch"]

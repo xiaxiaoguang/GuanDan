@@ -74,6 +74,9 @@ class OnPolicyBaseRunner:
                 self.env_num,
             ) = make_render_env(args["env"], algo_args["seed"]["seed"], env_args)
         else:  # make envs for training and evaluation
+            
+            ###0628### set env here
+            
             self.envs = make_train_env(
                 args["env"],
                 algo_args["seed"]["seed"],
@@ -93,9 +96,10 @@ class OnPolicyBaseRunner:
 
         self.num_agents = get_num_agents(args["env"], env_args, self.envs)
 
-        print("share_observation_space: ", self.envs.share_observation_space)
-        print("observation_space: ", self.envs.observation_space)
-        print("action_space: ", self.envs.action_space)
+        ###0628###
+        # print("share_observation_space: ", self.envs.share_observation_space)
+        # print("observation_space: ", self.envs.observation_space)
+        # print("action_space: ", self.envs.action_space)
 
         # actor
         if self.share_param:
@@ -120,12 +124,16 @@ class OnPolicyBaseRunner:
             self.actor = []
             for agent_id in range(self.num_agents):
 
+                ###0628### set agent here
+
                 agent = ALGO_REGISTRY[args["algo"]](
                     {**algo_args["model"], **algo_args["algo"]},
                     self.envs.observation_space[agent_id],
                     self.envs.action_space[agent_id],
                     device=self.device,
+                    agent_id=agent_id,  #####0628### add agent_id
                 )
+                ###0628### print(type(agent)) # <class 'harl.algorithms.actors.happo.HAPPO'>
                 self.actor.append(agent)
 
         if self.algo_args["render"]["use_render"] is False:  # train, not render

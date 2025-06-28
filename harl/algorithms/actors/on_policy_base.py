@@ -2,11 +2,12 @@
 
 import torch
 from harl.models.policy_models.stochastic_policy import StochasticPolicy
+from harl.models.policy_models.expert_policy import ExpertPolicy
 from harl.utils.models_tools import update_linear_schedule
 
 
 class OnPolicyBase:
-    def __init__(self, args, obs_space, act_space, device=torch.device("cpu")):
+    def __init__(self, args, obs_space, act_space, device=torch.device("cpu"), agent_id=None):
         """Initialize Base class.
         Args:
             args: (dict) arguments.
@@ -31,8 +32,14 @@ class OnPolicyBase:
         # save observation and action spaces
         self.obs_space = obs_space
         self.act_space = act_space
+        
+        #####0628### add agent_id
         # create actor network
-        self.actor = StochasticPolicy(args, self.obs_space, self.act_space, self.device)
+        if agent_id is None or agent_id % 2 == 0:  # for even agent_id, use stochastic policy
+            self.actor = StochasticPolicy(args, self.obs_space, self.act_space, self.device)
+        else:
+            self.actor = ExpertPolicy()
+            
         # create actor optimizer
         self.actor_optimizer = torch.optim.Adam(
             self.actor.parameters(),
@@ -61,9 +68,18 @@ class OnPolicyBase:
                                  (if None, all actions available)
             deterministic: (bool) whether the action should be mode of distribution or should be sampled.
         """
+        
+        ###0628### 
+        print('obs', obs)
+        
         actions, action_log_probs, rnn_states_actor = self.actor(
             obs, rnn_states_actor, masks, available_actions, deterministic
         )
+        
+        ####0628###
+        print('actions', actions)
+        print('action_log_probs', action_log_probs)
+        
         return actions, action_log_probs, rnn_states_actor
 
     def evaluate_actions(
