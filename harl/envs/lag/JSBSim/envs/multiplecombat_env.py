@@ -77,6 +77,10 @@ class MultipleCombatEnv(BaseEnv):
                 dones: whether the episode has ended, in which case further step() calls are undefined
                 info: auxiliary information
         """
+        
+        print("#"*10)
+        print(action)
+        
         self.current_step += 1
         info = {"current_step": self.current_step}
 

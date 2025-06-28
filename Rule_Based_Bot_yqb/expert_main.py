@@ -7,6 +7,90 @@ import json
 from expert_utils import *
 from expert_env import *
     
+   
+class State:
+    def __init__(self,level=2):
+        # 游戏全局信息
+        self.level = level             # 本局等级
+        
+        # 当前玩家ID(0,1,2,3)
+        self.current_id = 0             
+        # 四家的手牌,每一个都是带花色的字典，key是牌的编号，value是花色字典，花色字典的key是花色，value是张数，例如：
+        '''
+        {
+            1:{'h':0,'d':0,'s':0,'c':0},2:{'h':0,'d':0,'s':0,'c':0},3:{'h':0,'d':0,'s':0,'c':0},
+            4:{'h':0,'d':0,'s':0,'c':0},5:{'h':0,'d':0,'s':0,'c':0},6:{'h':0,'d':0,'s':0,'c':0},
+            7:{'h':0,'d':0,'s':0,'c':0},8:{'h':0,'d':0,'s':0,'c':0},9:{'h':0,'d':0,'s':0,'c':0},
+            10:{'h':0,'d':0,'s':0,'c':0},11:{'h':0,'d':0,'s':0,'c':0},12:{'h':0,'d':0,'s':0,'c':0},
+            13:{'h':0,'d':0,'s':0,'c':0},14:0,15:0
+        }
+        '''
+        self.all_cards = {
+            0:{},1:{},2:{},3:{}
+        }  
+        # 四家目前红配数
+        self.current_red_num={
+            0:0,1:0,2:0,3:0
+        }
+        # 已经出完牌的玩家，0123          
+        self.done=[]
+        # 上一手牌刚刚出完牌的玩家，它不为-1当且仅当这个玩家出完牌后的这一圈还没结束
+        self.just_done=-1
+        # 四家的发牌，0-107，每个长度27
+        self.deliver={
+            0:[],1:[],2:[],3:[]
+        }
+        # 四家的手牌数
+        self.current_card_num={0:27, 1:27, 2:27, 3:27}
+        # 出牌历史,注意这里与json数据不同，这里是记录了从开局到现在的每一手牌，它的元素都是带花色的字典
+        self.history = []
+        # 上下对家上一手牌，这里的三个{}分别是上家，下家，对家，每个{}里面是一个字典，字典定义与self.my_cards相同
+        self.last_move={0:{}, 1:{}, 2:{}, 3:{}}             
+        # 上下对家已经出过的牌的集合,这里的三个{}分别是上家，下家，对家，每个{}里面是一个字典，字典定义与self.my_cards相同
+        self.out_cards={0:{},1:{},2:{},3:{}}
+        
+        # 游戏阶段
+        self.stage = None             # 当前阶段 (deal, tribute, return, play)
+
+    def update_from_json(self, request):
+        """
+        从 JSON 数据更新 state (测试阶段)
+        :param request: 输入的 JSON 请求
+        """
+        self.stage = request.get("stage", None)
+        self.global_info = request.get("global", {})
+        
+        # 更新全局信息
+        if "global" in request:
+            global_info = request["global"]
+            self.level = global_info.get("level", None)
+        
+        # 更新玩家信息
+        if "your_id" in request:
+            self.my_id = request["your_id"]
+        if "my_cards" in request:
+            self.my_cards = request["my_cards"]
+
+        # 更新历史信息
+        if "history" in request:
+            self.history = request["history"]
+
+    def simulate_state(self, level, my_id, all_cards, history, stage):
+        """
+        模拟直接更新 state (训练阶段)
+        :param level: 本局等级
+        :param my_id: 当前玩家ID
+        :param all_cards: 四家的手牌
+        :param history: 出牌历史
+        :param stage: 当前阶段
+        """
+        self.level = level
+        self.my_id = my_id
+        self.all_cards = all_cards
+        self.history = history
+        self.stage = stage
+           
+
 def expert_decision(state):
     # 初始化环境
     env=ExpertGuanDanEnv()
