@@ -8,16 +8,85 @@ from harl.models.base.act import ACTLayer
 from harl.models.policy_models.baseline_kid import make_decision
 from harl.utils.envs_tools import get_shape_from_obs_space
 from harl.envs.GuanDanEnv.env import GuanDanEnv
+import json
 
+###0629 by WMQ
 def json_to_action(json_response):
     env = GuanDanEnv()
     env.reset()
     return env.get_action_id(json_response)
 
-def history_to_json(info):
+###0629 by WMQ
+def binary_to_index(binary_array):
+    '''get the index of the all 1 element in a 0-1 vector, using torch'''
+    binary_array = torch.tensor(binary_array, dtype=torch.bool)
+    indices = torch.nonzero(binary_array, as_tuple=False)
+    return indices.squeeze().tolist() if indices.numel() > 0 else []
+
+###0629 by WMQ
+def history_to_json(info, obs):
     """Convert history to JSON format for decision making."""
     json_format = {"requests": [], "responses": []}
-    print("info",info)
+    
+    # player = [[] for _ in range(4)]
+    # for i in range(4):
+    #     player[i] = info[0][i]
+    # for i in range(6, len(info[0]), 2):
+    #     player[i] -= info[0][i]
+    
+    # current_player = -1
+    # for i in range(4):
+    #     if obs[0][:108] == player[i]:
+    #         current_player = i
+    
+    # assert current_player != -1, "Current player not found in history."
+    
+    current_player = ((len(info[0]) - 4) % 8) // 2
+    
+    json_format["requests"].append({
+        "stage": "deal",
+        "deliver": binary_to_index(info[0][current_player]),
+        "your_id": current_player,
+        "global":{
+            "level": "2",
+            "tribute": 0,
+            "first": None,
+            "last": None
+        }
+    })
+    
+    rounds = (len(info[0]) + 4) // 8
+    
+    for rr in range(rounds):    
+        
+        hhh = [[] for _ in range(4)]
+        
+        for j in range(4):
+            jjdex = (j + current_player) % 4
+            if 2*j + 8*rr + 2*current_player -4 < 4:
+                hhh[jjdex] = [[],[]] 
+            else:    
+                hhh[jjdex] = [
+                    binary_to_index(info[0][2*j + 8*rr + 2*current_player -4]),
+                    binary_to_index(info[0][2*j + 8*rr + 2*current_player -3])
+                    ]
+                
+        json_format["requests"].append({
+            "stage": "play",
+            "history": hhh,
+            "global":{"level":"2","tribute":0,"first":None,"last":None,"tribute_cards":{},"return_cards":{},"resist":False},
+            "done":[],"pass_on":-1
+        })
+        
+        if 8*rr + 2*current_player -4 < 4:
+            json_format["responses"] = [[],[]] 
+        else:    
+            json_format["responses"] = [
+                binary_to_index(info[0][8*rr + 2*current_player -4]),
+                binary_to_index(info[0][8*rr + 2*current_player -3])
+                ]
+        
+    return json_format
     
 
 class ExpertPolicy(nn.Module):
@@ -64,9 +133,9 @@ class ExpertPolicy(nn.Module):
 
         self.to(device)
         
-
+    ###0629 by WMQ
     def forward(
-        self, obs, rnn_states, masks, available_actions=None, deterministic=False
+        self, obs, rnn_states, masks, history, available_actions=None, deterministic=False
     ):
         """Compute actions from the given inputs.
         Args:
@@ -82,11 +151,15 @@ class ExpertPolicy(nn.Module):
             rnn_states: (torch.Tensor) updated RNN hidden states.
         """
 
-        json_input = history_to_json(available_actions)
-        response = make_decision(json_input)         # format: {"response": [[98, 47, 101, 100], [98, 47, 101, 100]]}
-        actions = json_to_action(response["response"][0])
+        json_input = history_to_json(history, obs)
+        # print(type(json_input))
+        response = make_decision(json_input)        
+        action_id = json_to_action(response[0])
         
-        action_log_probs = torch.zeros((1,367))
+        actions = torch.zeros((1, 367), dtype=torch.float32)
+        actions[0, action_id] = 1.0  # Set the action at
+        action_log_probs = torch.zeros((1 , 367))
+        rnn_states = torch.zeros(rnn_states.shape, dtype=torch.float32)
 
         return actions, action_log_probs, rnn_states
 

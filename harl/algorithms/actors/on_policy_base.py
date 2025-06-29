@@ -57,7 +57,7 @@ class OnPolicyBase:
         update_linear_schedule(self.actor_optimizer, episode, episodes, self.lr)
 
     def get_actions(
-        self, obs, rnn_states_actor, masks, available_actions=None, deterministic=False
+        self, obs, rnn_states_actor, masks, history, available_actions=None, deterministic=False
     ):
         """Compute actions for the given inputs.
         Args:
@@ -73,7 +73,7 @@ class OnPolicyBase:
         # print('obs', obs)
         
         actions, action_log_probs, rnn_states_actor = self.actor(
-            obs, rnn_states_actor, masks, available_actions, deterministic
+            obs, rnn_states_actor, masks, history, available_actions, deterministic
         )
         
         ####0628###

@@ -91,7 +91,7 @@ class GuanDanEnv():
             self.level = config['level']
         else:
             self.level = '2'
-            warnings.warn("ResetConfigWarning: Level configuration fault or no level designated.")
+            # warnings.warn("ResetConfigWarning: Level configuration fault or no level designated.")
         self.curr_player = 0
         self.point_order = ['2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K', 'A']
         self._set_level()
@@ -120,7 +120,7 @@ class GuanDanEnv():
         self.cleared = []
         self.game_state_info = "Running"
         # You just need to implement this function , by parameter 0 it return a correct obs of player 0
-        return self.get_obs(), self.get_state(), None, self.history
+        return self.get_obs(), self.get_state(), None, np.array(self.history)
 
 
     def get_obs(self):
@@ -617,7 +617,7 @@ class GuanDanEnv():
         share_obs = np.array([self.get_state() for _ in range(4)])
         dones = np.array([len(self.player_decks[i]) == 0 or self.done for i in range(4)])
         infos = [{"state": self.game_state_info, "actions" : action}]
-        return obs, share_obs, rewards, dones, infos, None, self.history
+        return obs, share_obs, rewards, dones, infos, None, np.array(self.history)
         
     def _set_reward(self,curr_player):
         '''

@@ -55,7 +55,7 @@ class OnPolicyActorBuffer:
         ###0629
         ### 注意必须不能设置成None！否则永远不会往里放东西！
         
-        # self.available_actions = None
+        self.available_actions = None
 
         ###0629
         # 需要设置一个新的buffer
@@ -90,6 +90,7 @@ class OnPolicyActorBuffer:
     def insert(
         self,
         obs,
+        history,
         rnn_states,
         actions,
         action_log_probs,
@@ -109,6 +110,7 @@ class OnPolicyActorBuffer:
             self.available_actions[self.step + 1] = available_actions.copy()
 
         self.step = (self.step + 1) % self.episode_length
+        self.history_buffer[self.step + 1] = history.copy() ###0629!!!!WMQ  ###Might buggy????!!!!
 
     def after_update(self):
         """After an update, copy the data at the last step to the first position of the buffer."""
@@ -118,6 +120,8 @@ class OnPolicyActorBuffer:
         self.active_masks[0] = self.active_masks[-1].copy()
         if self.available_actions is not None:
             self.available_actions[0] = self.available_actions[-1].copy()
+        ###0629!!!Here!!!
+        self.history_buffer[0] = self.history_buffer[-1].copy() ####0629!!!!WMQ
 
     def feed_forward_generator_actor(
         self, advantages, actor_num_mini_batch=None, mini_batch_size=None

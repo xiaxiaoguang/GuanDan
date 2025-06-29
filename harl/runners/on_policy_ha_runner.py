@@ -125,3 +125,4 @@ class OnPolicyHARunner(OnPolicyBaseRunner):
         # update critic
         critic_train_info = self.critic.train(self.critic_buffer, self.value_normalizer)
         return actor_train_infos, critic_train_info
+

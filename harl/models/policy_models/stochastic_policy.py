@@ -53,7 +53,7 @@ class StochasticPolicy(nn.Module):
         self.to(device)
 
     def forward(
-        self, obs, rnn_states, masks, available_actions=None, deterministic=False
+        self, obs, rnn_states, masks, history, available_actions=None, deterministic=False
     ):
         """Compute actions from the given inputs.
         Args:

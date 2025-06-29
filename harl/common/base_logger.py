@@ -54,6 +54,7 @@ class BaseLogger:
             dones,
             infos,
             available_actions,
+            history,
             values,
             actions,
             action_log_probs,

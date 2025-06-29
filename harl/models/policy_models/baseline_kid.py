@@ -1109,8 +1109,7 @@ def make_decision(full_json):
         return request, response
 
     def output(response: list):
-        response = {'response' : response}
-        return json.dumps(response)
+        return response
 
     response = []
 
@@ -1140,7 +1139,18 @@ def make_decision(full_json):
     isDealTribute = False
 
     for i in range(len(full_json['requests'])):
-        JsonInput, ResponseOutput = get_input()
+        # JsonInput, ResponseOutput = get_input()
+        
+        self_round_num += 1
+        request = full_json['requests'][self_round_num - 1]
+        if len(full_json['responses']) >= self_round_num:
+            response = full_json['responses'][self_round_num - 1]
+        else:
+            response = []
+            
+        JsonInput = request
+        ResponseOutput = response
+        
         if JsonInput['stage'] == 'deal':
             # 第一次输入
             StartInput = JsonInput
@@ -1289,3 +1299,5 @@ def make_decision(full_json):
     else:
         return output([])
         
+# if __name__ == "__main__":
+    

@@ -244,6 +244,7 @@ class OnPolicyBaseRunner:
                         dones,
                         infos,
                         available_actions,
+                        history
                     ) = self.envs.step(action)
                     
                     # Save transition (reward is just 0 for now)
@@ -255,6 +256,7 @@ class OnPolicyBaseRunner:
                             dones,
                             infos,
                             available_actions,
+                            history,
                             value,
                             action,
                             action_log_prob,
@@ -262,6 +264,7 @@ class OnPolicyBaseRunner:
                             rnn_state_critic,
                         )
                     )
+                    print(curr_player, history.shape)
 
                     # If game ends, assign MC rewards to all steps
                     if np.all(dones, axis=1):
@@ -391,7 +394,8 @@ class OnPolicyBaseRunner:
                     self.actor_buffer[agent_id].obs[step],
                     self.actor_buffer[agent_id].rnn_states[step],
                     self.actor_buffer[agent_id].masks[step],
-                    self.actor_buffer[agent_id].available_actions[step]
+                    self.actor_buffer[agent_id].available_actions[step],
+                    self.actor_buffer[agent_id].history_buffer[step]
                     if self.actor_buffer[agent_id].available_actions is not None
                     else None,
                 )
@@ -403,9 +407,10 @@ class OnPolicyBaseRunner:
                     self.actor_buffer[agent_id].obs[step],
                     self.actor_buffer[agent_id].rnn_states[step],
                     self.actor_buffer[agent_id].masks[step],
+                    self.actor_buffer[agent_id].history_buffer[step],
                     self.actor_buffer[agent_id].available_actions[step]
                     if self.actor_buffer[agent_id].available_actions is not None
-                    else None,
+                    else None
                 )
             for _ in range(self.num_agents):            
                 action_collector.append(_t2n(action))
@@ -575,6 +580,7 @@ class OnPolicyBaseRunner:
             dones,  # (n_threads, n_agents)
             infos,  # type: list, shape: (n_threads, n_agents)
             available_actions,  # (n_threads, ) of None or (n_threads, n_agents, action_number)
+            history, ###0629??????
             values,  # EP: (n_threads, dim), FP: (n_threads, n_agents, dim)
             actions,  # (n_threads, n_agents, action_dim)
             action_log_probs,  # (n_threads, n_agents, action_dim)
@@ -640,6 +646,7 @@ class OnPolicyBaseRunner:
 
         self.actor_buffer[agent_id].insert(
                 obs[:, agent_id],
+                history,  ###0629!!WMQ !!!note no agent_id
                 rnn_states[:, agent_id],
                 actions[:, agent_id],
                 action_log_probs[:, agent_id],

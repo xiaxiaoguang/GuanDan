@@ -323,7 +323,7 @@ class ShareDummyVecEnv(ShareVecEnv):
     def step_wait(self):
         results = [env.step(a) for (a, env) in zip(self.actions, self.envs)]
 
-        obs, share_obs, rews, dones, infos, available_actions = map(
+        obs, share_obs, rews, dones, infos, available_actions, history = map(
             np.array, zip(*results)
         )
 
@@ -337,7 +337,8 @@ class ShareDummyVecEnv(ShareVecEnv):
                     infos[i][0]["original_avail_actions"] = copy.deepcopy(
                         available_actions[i]
                     )
-                    obs[i], share_obs[i], available_actions[i] = self.envs[i].reset()
+                    infos[i][0]["history"] = copy.deepcopy(history[i])
+                    obs[i], share_obs[i], available_actions[i], history[i] = self.envs[i].reset()
             else:
                 if np.all(done):  # if done, save the original obs, state, and available actions in info, and then reset
                     infos[i][0]["original_obs"] = copy.deepcopy(obs[i])
@@ -345,15 +346,17 @@ class ShareDummyVecEnv(ShareVecEnv):
                     infos[i][0]["original_avail_actions"] = copy.deepcopy(
                         available_actions[i]
                     )
-                    obs[i], share_obs[i], available_actions[i] = self.envs[i].reset()
+                    infos[i][0]["history"] = copy.deepcopy(history[i])
+                    obs[i], share_obs[i], available_actions[i], hhh = self.envs[i].reset()
+                    history = np.array([hhh])
         
         self.actions = None
-        return obs, share_obs, rews, dones, infos, available_actions
+        return obs, share_obs, rews, dones, infos, available_actions, history
 
     def reset(self):
         results = [env.reset() for env in self.envs]
-        obs, share_obs, available_actions = map(np.array, zip(*results))
-        return obs, share_obs, available_actions
+        obs, share_obs, available_actions, history = map(np.array, zip(*results))
+        return obs, share_obs, available_actions, history
 
     def close(self):
         for env in self.envs:
